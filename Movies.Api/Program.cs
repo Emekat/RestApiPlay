@@ -3,13 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Movies.Api;
 using Movies.Api.Mapping;
 using Movies.Application;
-using Movies.Application.Database;
 using Movies.Application.Models;
 using Movies.Application.Repositories;
 using Movies.Contract.Requests;
 using Movies.Contract.Responses;
 using MovieMapper = Movies.Api.Mapping.MovieMapper;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,13 +37,11 @@ app.MapPost(ApiEndpoints.Movies.Create, async (IMovieRepository movieRepository,
         YearOfRelease = request.YearOfRelease,
         Genres = request.Genres.ToList()
     };
-    await movieRepository.CreateAsync(movie);
+    var persisted = await movieRepository.CreateAsync(movie);
 
     var mapper = new MovieMapper();
-    var response = mapper.MovieToMovieResponse(movie);
-    // Ensure the route value property name matches the MapGet parameter `idOrSlug`.
-    // Use the slug if available; otherwise use the generated Guid as string.
-    var locationId = movie.Slug ?? movie.Id.ToString();
+    var response = mapper.MovieToMovieResponse(persisted); 
+    var locationId = persisted.Id.ToString();
     return Results.CreatedAtRoute("Get", new { idOrSlug = locationId }, response);
 })
 .WithOpenApi();
@@ -94,16 +90,6 @@ app.MapDelete(ApiEndpoints.Movies.Delete, async (IMovieRepository movieRepositor
    var deleted = await movieRepository.DeleteByIdAsync(id);
    return !deleted ? Results.NotFound() : Results.Ok();
 });
-// Resolve the scoped DbInitializer from a scope instead of the root provider.
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-//     await dbInitializer.InitializeAsync();
-// }
-
-
-var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
-await dbInitializer.InitializeAsync();
 app.Run();
 
 // Add this minimal partial Program declaration so tests can reference the application entry point
