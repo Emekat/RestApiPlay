@@ -1,5 +1,7 @@
 <Solution>
-  <Project Path="Movies.Api\Movies.Api.csproj" Type="Classic C#" />
-  <Project Path="Movies.Application\Movies.Application.csproj" Type="Classic C#" />
-  <Project Path="Movies.Contract\Movies.Contract.csproj" Type="Classic C#" />
+  <Folder Name="/Solution Items/" />
+  <Project Path="Movies.Api.IntegrationTests/Movies.Api.IntegrationTests.csproj" />
+  <Project Path="Movies.Api\Movies.Api.csproj" />
+  <Project Path="Movies.Application\Movies.Application.csproj" />
+  <Project Path="Movies.Contract\Movies.Contract.csproj" />
 </Solution>
